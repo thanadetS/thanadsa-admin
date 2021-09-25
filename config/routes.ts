@@ -19,38 +19,28 @@
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
+    path: '/device-manager',
+    name: 'device.manager',
     icon: 'smile',
-    component: './Welcome',
+    component: './device-manager/',
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    component: './Admin',
-    routes: [
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
-      },
-      {
-        component: './404',
-      },
-    ],
+    path: '/user-management',
+    name: 'user.management',
+    icon: 'smile',
+    component: './user-management/',
   },
   {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
+    path: '/user-management/create',
+    component: './user-management/UserManagementForm',
+  },
+  {
+    path: '/user-management/edit/:id',
+    component: './user-management/UserManagementForm',
   },
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/device-manager',
   },
   {
     component: './404',
