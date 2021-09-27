@@ -1,55 +1,58 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Col, Divider, Row, Space } from 'antd';
 import { Table } from 'antd';
-import type { ColumnType } from './index.interface';
+import type { ColumnType, UserData } from './index.interface';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import styles from './index.less';
+import { db } from '../../services/firebase';
+import type { DocumentData } from 'firebase/firestore/lite';
 
 const { Column } = Table;
 
-const data: ColumnType[] = [
-  {
-    key: '1',
-    firstName: 'John',
-    lastName: 'Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    firstName: 'Jim',
-    lastName: 'Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    firstName: 'Joe',
-    lastName: 'Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
-
-new Array(20).fill(undefined).forEach((item, index) => {
-  data.push({
-    key: index + 4 + '',
-    firstName: 'Joe' + index,
-    lastName: 'Black' + index,
-    age: 32 + index,
-    address: 'Sidney No. 1 Lake Park' + index,
-    tags: ['cool', 'teacher'],
-  });
-});
-
 const UserManagement = () => {
   const history = useHistory();
+  const usersCollection = db.collection('users');
   const [, setIsOpenDrawer] = useState(false);
   const [, setDeviceId] = useState('');
+  const [users, setUsers] = useState<UserData[]>([]);
+
+  // const getUsers = async () => {
+  //   // const usersSnapshot = await getDocs(usersCol);
+  //   // const usersList = usersSnapshot.docs.map((doc) => doc.data());
+  //   return usersList;
+  // };
+
+  // useEffect(() => {
+  //   getUsers().then((items) => {
+  //     setUsers(items);
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    const unsubscribe = usersCollection.onSnapshot((items) => {
+      const list: UserData[] = [];
+      let rowNumber = 1;
+      items.forEach((document) => {
+        const documentData = document.data();
+        list.push({
+          id: document.id,
+          userName: documentData.userName,
+          password: documentData.password,
+          email: documentData.email,
+          userImage: documentData.userImage,
+          rowNumber: rowNumber++,
+        });
+      });
+      setUsers(list);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  console.log('users', users);
 
   return (
     <>
@@ -71,23 +74,23 @@ const UserManagement = () => {
             </Button>
           </Col>
         </Row>
-        <Table<ColumnType>
-          dataSource={data}
-          rowKey={(record) => record.key}
+        <Table<UserData>
+          dataSource={users}
+          rowKey={(record) => record.id}
           pagination={false}
           bordered
           size="small"
           scroll={{ y: 500 }}
         >
-          <Column title="No." dataIndex="key" key="key" align="center" width="10%" />
+          <Column title="No." key="rowNumber" dataIndex="rowNumber" align="center" width="10%" />
           <Column
             title="User Name"
-            dataIndex="firstName"
-            key="firstName"
+            dataIndex="userName"
+            key="userName"
             align="center"
             width="30%"
           />
-          <Column title="Email" dataIndex="lastName" key="lastName" align="center" width="40%" />
+          <Column title="Email" dataIndex="email" key="email" align="center" width="40%" />
           <Column
             title=""
             key="edit-action"
@@ -97,8 +100,8 @@ const UserManagement = () => {
               <Space size="middle">
                 <Button
                   onClick={() => {
-                    setIsOpenDrawer(true);
-                    setDeviceId(text.key);
+                    // setIsOpenDrawer(true);
+                    // setDeviceId(text.key);
                   }}
                 >
                   <EditOutlined />
