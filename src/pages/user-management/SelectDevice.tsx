@@ -1,20 +1,5 @@
-import {
-  Button,
-  Checkbox,
-  Col,
-  Divider,
-  Drawer,
-  Form,
-  Input,
-  Row,
-  Select,
-  Space,
-  Table,
-} from 'antd';
-import type { ColumnDeviceManage, SelectDeviceData } from './index.interface';
-import { DeviceManageCondition } from './index.interface';
-import { useEffect } from 'react';
-import { DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Col, Drawer, Row, Space, Table } from 'antd';
+import type { SelectDeviceData } from './index.interface';
 import Column from 'antd/lib/table/Column';
 import styles from './SelectDevice.less';
 
@@ -50,10 +35,6 @@ new Array(20).fill(undefined).forEach((item, index) => {
 });
 
 const SelectDevice = ({ isOpenDrawer, onCloseDrawer }: Props) => {
-  const onFinish = (values: ColumnDeviceManage) => {
-    console.log('values => ', JSON.stringify(values));
-  };
-
   // useEffect(() => {
   //   if (deviceId) {
   //     form.setFieldsValue(initialValues);

@@ -1,4 +1,4 @@
-import { storage } from '../../services/firebase';
+// import { storage } from '../../services/firebase';
 
 export const beforeUpload = (file: any) => {
   const isImage = file.type.indexOf('image/') === 0;

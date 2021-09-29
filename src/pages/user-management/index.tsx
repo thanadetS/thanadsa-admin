@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Button, Col, Divider, Row, Space } from 'antd';
 import { Table } from 'antd';
-import type { ColumnType, UserData } from './index.interface';
+import type { UserData } from './index.interface';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import styles from './index.less';
 import { db } from '../../services/firebase';
-import type { DocumentData } from 'firebase/firestore/lite';
 
 const { Column } = Table;
 
 const UserManagement = () => {
   const history = useHistory();
   const usersCollection = db.collection('users');
-  const [, setIsOpenDrawer] = useState(false);
-  const [, setDeviceId] = useState('');
   const [users, setUsers] = useState<UserData[]>([]);
 
   // const getUsers = async () => {
@@ -96,7 +93,7 @@ const UserManagement = () => {
             key="edit-action"
             width="20%"
             align="center"
-            render={(text) => (
+            render={() => (
               <Space size="middle">
                 <Button
                   onClick={() => {

@@ -3,12 +3,11 @@ import type { FC } from 'react';
 import { useState } from 'react';
 import SHA256 from 'crypto-js/sha256';
 import { DeleteOutlined } from '@ant-design/icons';
-import ManageDevice from '../device-manager/ManageDevice';
 import { useParams } from 'react-router-dom';
 import styles from './UserManagementForm.less';
-import { UploadFile } from 'antd/lib/upload/interface';
+import type { UploadFile } from 'antd/lib/upload/interface';
 import { storage } from '../../services/firebase';
-import { FileUploadTaskState, UserDeviceData } from './index.interface';
+import type { UserDeviceData } from './index.interface';
 import Column from 'antd/lib/table/Column';
 import SelectDevice from './SelectDevice';
 import { beforeUpload, onPreview } from '../../services/user-management/upload';
@@ -36,12 +35,14 @@ const UserManagementForm: FC = () => {
   const { id }: { id: string } = useParams();
   const [fileImages, setFileImages] = useState<UploadFile[]>([]);
   const [uploadFile, setUploadFile] = useState<any>();
-  const [userDevices, setUserDevices] = useState<UserDeviceData[]>(data);
+  const [userDevices] = useState<UserDeviceData[]>(data);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
 
   const onCloseDrawer = () => {
     setIsOpenDrawer(false);
   };
+
+  // setUserDevices(data);
 
   // const [fileImages, setFileImages] = useState<UploadFile[]>([
   //   {
@@ -223,7 +224,7 @@ const UserManagementForm: FC = () => {
                 key="delete-action"
                 width="10%"
                 align="center"
-                render={(text) => (
+                render={() => (
                   <Space size="middle">
                     <Button
                       onClick={() => {
