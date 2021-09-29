@@ -12,7 +12,7 @@ export enum DeviceManageCondition {
 
 export interface DeviceManageAlert {
   device: string;
-  conditionChoice: string;
+  conditionType: string;
   conditionValue: string;
 }
 

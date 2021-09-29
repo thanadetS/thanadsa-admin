@@ -4,55 +4,32 @@ import type { ColumnType } from './index.interface';
 import { useState } from 'react';
 import { EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import ManageDevice from './ManageDevice';
+import listDevices from '../../services/device-manager/devices';
 import styles from './index.less';
+import { useEffect } from 'react';
+import { getDeviceTypeByDeviceId } from './utils';
 
 const { Column } = Table;
-
-const data: ColumnType[] = [
-  {
-    key: '1',
-    firstName: 'John',
-    lastName: 'Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    firstName: 'Jim',
-    lastName: 'Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    firstName: 'Joe',
-    lastName: 'Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
-
-new Array(20).fill(undefined).forEach((item, index) => {
-  data.push({
-    key: index + 4 + '',
-    firstName: 'Joe' + index,
-    lastName: 'Black' + index,
-    age: 32 + index,
-    address: 'Sidney No. 1 Lake Park' + index,
-    tags: ['cool', 'teacher'],
-  });
-});
 
 const DeviceManager = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [deviceId, setDeviceId] = useState('');
+  const [devices, setDevices] = useState<ColumnType[]>([]);
+  const [isRegister, setIsRegister] = useState(false);
 
   const onCloseDrawer = () => {
     setIsOpenDrawer(false);
   };
+
+  useEffect(() => {
+    const list = (listDevices || []).map((item) => {
+      return {
+        deviceId: item.msgParam.deviceUid.toUpperCase(),
+        deviceType: getDeviceTypeByDeviceId(item.msgParam.deviceUid) || '',
+      };
+    });
+    setDevices(list);
+  }, []);
 
   return (
     <>
@@ -60,8 +37,8 @@ const DeviceManager = () => {
         <div className={styles.listDevice}>
           <Divider orientation="left">Registered Device</Divider>
           <Table<ColumnType>
-            dataSource={data}
-            rowKey={(record) => record.key}
+            dataSource={devices}
+            rowKey={(record) => record.deviceId}
             // height="92%"
             pagination={false}
             bordered
@@ -70,20 +47,19 @@ const DeviceManager = () => {
           >
             <Column
               title="Device Id"
-              dataIndex="firstName"
-              key="firstName"
+              dataIndex="deviceId"
+              key="deviceId"
               align="center"
               width="30%"
             />
             <Column
               title="Device Type"
-              dataIndex="lastName"
-              key="lastName"
+              dataIndex="deviceType"
+              key="deviceType"
               align="center"
               width="50%"
             />
             <Column
-              title=""
               key="edit-action"
               width="20%"
               align="center"
@@ -92,7 +68,8 @@ const DeviceManager = () => {
                   <Button
                     onClick={() => {
                       setIsOpenDrawer(true);
-                      setDeviceId(text.key);
+                      setDeviceId(text.deviceId);
+                      setIsRegister(true);
                     }}
                   >
                     <EditOutlined />
@@ -105,8 +82,8 @@ const DeviceManager = () => {
         <div className={styles.listDevice}>
           <Divider orientation="left">Unregistered Device</Divider>
           <Table<ColumnType>
-            dataSource={data}
-            rowKey={(record) => record.key}
+            dataSource={devices}
+            rowKey={(record) => record.deviceId}
             // height="92%"
             pagination={false}
             bordered
@@ -115,29 +92,29 @@ const DeviceManager = () => {
           >
             <Column
               title="Device Id"
-              dataIndex="firstName"
-              key="firstName"
+              dataIndex="deviceId"
+              key="deviceId"
               align="center"
               width="30%"
             />
             <Column
               title="Device Type"
-              dataIndex="lastName"
-              key="lastName"
+              dataIndex="deviceType"
+              key="deviceType"
               align="center"
               width="50%"
             />
             <Column
-              title=""
-              key="edit-action"
+              key="add-action"
               width="20%"
               align="center"
-              render={() => (
+              render={(text) => (
                 <Space size="middle">
                   <Button
                     onClick={() => {
                       setIsOpenDrawer(true);
-                      setDeviceId('');
+                      setDeviceId(text.deviceId);
+                      setIsRegister(false);
                     }}
                   >
                     <PlusCircleOutlined />
@@ -148,7 +125,12 @@ const DeviceManager = () => {
           </Table>
         </div>
       </div>
-      <ManageDevice deviceId={deviceId} isOpenDrawer={isOpenDrawer} onCloseDrawer={onCloseDrawer} />
+      <ManageDevice
+        isRegister={isRegister}
+        deviceId={deviceId}
+        isOpenDrawer={isOpenDrawer}
+        onCloseDrawer={onCloseDrawer}
+      />
     </>
   );
 };

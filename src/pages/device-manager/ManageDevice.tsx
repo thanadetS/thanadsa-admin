@@ -4,18 +4,18 @@ import { DeviceManageCondition } from './index.interface';
 import { useEffect } from 'react';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import styles from './index.less';
+import { getDeviceTypeDataFormatByDeviceId } from './utils';
+import { deviceSelected } from '@/services/device-manager/mock';
 
 interface Props {
+  isRegister: boolean;
   deviceId: string;
   isOpenDrawer: boolean;
   onCloseDrawer: () => void;
 }
 
-const ManageDevice = ({ deviceId, isOpenDrawer, onCloseDrawer }: Props) => {
+const ManageDevice = ({ isRegister, deviceId, isOpenDrawer, onCloseDrawer }: Props) => {
   const [form] = Form.useForm();
-  const initialValues = JSON.parse(
-    '{"deviceName":"test","customer":"demo","alertList":[{"device":"greater-than","conditionChoice":"lower-than","conditionValue":"25"},{"device":"equal","conditionChoice":"equal","conditionValue":"54"},{"device":"lower-than","conditionChoice":"greater-than","conditionValue":"100"}]}',
-  );
 
   const onFinish = (values: ColumnDeviceManage) => {
     console.log('values => ', JSON.stringify(values));
@@ -32,12 +32,12 @@ const ManageDevice = ({ deviceId, isOpenDrawer, onCloseDrawer }: Props) => {
   };
 
   useEffect(() => {
-    if (deviceId) {
-      form.setFieldsValue(initialValues);
+    if (isRegister && deviceId) {
+      form.setFieldsValue(deviceSelected(deviceId));
     } else {
       clearValues();
     }
-  }, [deviceId]);
+  }, [isRegister, deviceId]);
 
   const title = deviceId ? 'Manage device' : 'Register new device';
 
@@ -73,7 +73,7 @@ const ManageDevice = ({ deviceId, isOpenDrawer, onCloseDrawer }: Props) => {
               <Form.Item name="customer" label="Customer">
                 <Select>
                   <Select.Option value="">{null}</Select.Option>
-                  <Select.Option value="demo">Demo</Select.Option>
+                  <Select.Option value="admin">admin</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -87,7 +87,7 @@ const ManageDevice = ({ deviceId, isOpenDrawer, onCloseDrawer }: Props) => {
                     {fields.map((field) => (
                       <Space key={field.key} align="baseline">
                         <Form.Item label="Device Id" style={{ width: 100 }}>
-                          1234567890
+                          {deviceId}
                         </Form.Item>
                         <Form.Item
                           {...field}
@@ -96,19 +96,17 @@ const ManageDevice = ({ deviceId, isOpenDrawer, onCloseDrawer }: Props) => {
                           fieldKey={[field.fieldKey, 'device']}
                         >
                           <Select placeholder="Select..." style={{ width: 120 }}>
-                            <Select.Option value="greater-than">
-                              Greater Than Greater Than
-                            </Select.Option>
-                            <Select.Option value="lower-than">Lower Than Lower Than</Select.Option>
-                            <Select.Option value="equal">Equal Equal Equal</Select.Option>
+                            {(getDeviceTypeDataFormatByDeviceId(deviceId) || []).map((item) => (
+                              <Select.Option value={item.value}>{item.label}</Select.Option>
+                            ))}
                           </Select>
                         </Form.Item>
                         <Form.Item label="Condition">
                           <Input.Group compact>
                             <Form.Item
                               {...field}
-                              key={`conditionChoice${field.key}`}
-                              name={[field.name, 'conditionChoice']}
+                              key={`conditionType${field.key}`}
+                              name={[field.name, 'conditionType']}
                             >
                               <Select placeholder="Select..." style={{ width: 120 }}>
                                 <Select.Option value={DeviceManageCondition.greaterThan}>

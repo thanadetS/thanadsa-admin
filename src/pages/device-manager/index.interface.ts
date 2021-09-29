@@ -1,21 +1,17 @@
 export interface ColumnType {
-  key: string;
-  firstName: string;
-  lastName: string;
-  age: number;
-  address: string;
-  tags: string[];
+  deviceId: string;
+  deviceType: string;
 }
 
 export enum DeviceManageCondition {
-  greaterThan = 'Greater_Than',
-  lowerThan = 'Lower_Than',
-  equal = 'Equal'
+  greaterThan = 'GREATER_THAN',
+  lowerThan = 'LOWER_THAN',
+  equal = 'EQUAL',
 }
 
 export interface DeviceManageAlert {
   device: string;
-  conditionChoice: string;
+  conditionType: string;
   conditionValue: string;
 }
 
@@ -24,4 +20,25 @@ export interface ColumnDeviceManage {
   deviceName: string;
   customer: string;
   alertList: DeviceManageAlert[];
+}
+
+export interface MsgParam {
+  subCmd: string;
+  subType: string;
+  deviceUid: string;
+  data: string;
+  dataEncrypt: string;
+}
+
+export interface DeviceData {
+  msgDirect: string;
+  msgPriority: string;
+  msgType: string;
+  msgId: number;
+  apTime: number;
+  msgEncrypt: string;
+  msgUid: string;
+  msgCmd: string;
+  apUid: string;
+  msgParam: MsgParam;
 }

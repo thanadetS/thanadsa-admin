@@ -48,7 +48,6 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
-      // 登录
       // const msg = await login({ ...values, type });
       const msg = { status: 'ok', type, currentAuthority: 'admin' };
 
@@ -59,7 +58,6 @@ const Login: React.FC = () => {
         });
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
-        /** 此方法会跳转到 redirect 参数所在的位置 */
         if (!history) return;
         const { query } = history.location;
         const { redirect } = query as { redirect: string };
@@ -67,7 +65,6 @@ const Login: React.FC = () => {
         return;
       }
       console.log(msg);
-      // 如果失败去设置用户错误信息
       setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
