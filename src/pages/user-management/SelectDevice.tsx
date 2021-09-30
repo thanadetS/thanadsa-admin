@@ -1,47 +1,44 @@
 import { Button, Checkbox, Col, Drawer, Row, Space, Table } from 'antd';
-import type { SelectDeviceData } from './index.interface';
+import type { SelectDeviceData, UserDeviceData } from './index.interface';
 import Column from 'antd/lib/table/Column';
 import styles from './SelectDevice.less';
+import { getDeviceTypeByDeviceId } from '../device-manager/utils';
+import listDevices from '../../services/device-manager/devices';
+import { useEffect, useState } from 'react';
 
 interface Props {
   isOpenDrawer: boolean;
   onCloseDrawer: () => void;
 }
 
-const data: any = [
-  {
-    deviceId: '1',
-    isAlert: false,
-    isAdd: false,
-  },
-  {
-    deviceId: '2',
-    isAlert: false,
-    isAdd: false,
-  },
-  {
-    deviceId: '3',
-    isAlert: false,
-    isAdd: false,
-  },
-];
-
-new Array(20).fill(undefined).forEach((item, index) => {
-  data.push({
-    deviceId: index + 4 + '',
-    isAlert: false,
-    isAdd: false,
-  });
-});
-
 const SelectDevice = ({ isOpenDrawer, onCloseDrawer }: Props) => {
-  // useEffect(() => {
-  //   if (deviceId) {
-  //     form.setFieldsValue(initialValues);
-  //   } else {
-  //     clearValues();
-  //   }
-  // }, [deviceId]);
+  const [devices, setDevices] = useState<SelectDeviceData[]>([]);
+
+  useEffect(() => {
+    const list = (listDevices || []).map((item) => {
+      return {
+        deviceId: item.msgParam.deviceUid.toUpperCase(),
+        deviceType: getDeviceTypeByDeviceId(item.msgParam.deviceUid) || '',
+        isAlert: false,
+        isAdd: false,
+      };
+    });
+    setDevices(list);
+  }, []);
+
+  const onChangeIsAlert = (deviceId: string) => {
+    const items = devices.map((item) =>
+      item.deviceId === deviceId ? { ...item, isAlert: !item.isAlert } : item,
+    );
+    setDevices(items);
+  };
+
+  const onChangeIsAdd = (deviceId: string) => {
+    const items = devices.map((item) =>
+      item.deviceId === deviceId ? { ...item, isAdd: !item.isAdd } : item,
+    );
+    setDevices(items);
+  };
 
   return (
     <>
@@ -55,8 +52,8 @@ const SelectDevice = ({ isOpenDrawer, onCloseDrawer }: Props) => {
         <Row gutter={16}>
           <Col span={24}>
             <Table<SelectDeviceData>
-              dataSource={data}
-              rowKey={(record) => record.id}
+              dataSource={devices}
+              rowKey={(record) => record.deviceId}
               pagination={false}
               bordered
               size="small"
@@ -82,14 +79,14 @@ const SelectDevice = ({ isOpenDrawer, onCloseDrawer }: Props) => {
                 key="isAlert"
                 align="center"
                 width="20%"
-                render={(text) => {
+                render={(_text, record: SelectDeviceData) => {
                   return (
                     <Space size="middle">
                       <Checkbox
                         onChange={() => {
-                          // onChangeOneTimeSubCoupon(record.key || '');
+                          onChangeIsAlert(record.deviceId || '');
                         }}
-                        checked={text.isAlert}
+                        checked={record.isAlert}
                       />
                     </Space>
                   );
@@ -101,14 +98,14 @@ const SelectDevice = ({ isOpenDrawer, onCloseDrawer }: Props) => {
                 key="isAdd"
                 align="center"
                 width="20%"
-                render={(text) => {
+                render={(_text, record: SelectDeviceData) => {
                   return (
                     <Space size="middle">
                       <Checkbox
                         onChange={() => {
-                          // onChangeOneTimeSubCoupon(record.key || '');
+                          onChangeIsAdd(record.deviceId || '');
                         }}
-                        checked={text.isAdd}
+                        checked={record.isAdd}
                       />
                     </Space>
                   );

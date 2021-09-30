@@ -12,103 +12,29 @@ import Column from 'antd/lib/table/Column';
 import SelectDevice from './SelectDevice';
 import { beforeUpload, onPreview } from '../../services/user-management/upload';
 
-const data: any = [
-  {
-    rowNumber: '1',
-  },
-  {
-    rowNumber: '2',
-  },
-  {
-    rowNumber: '3',
-  },
-];
-
-new Array(20).fill(undefined).forEach((item, index) => {
-  data.push({
-    rowNumber: index + 4 + '',
-  });
-});
-
 const UserManagementForm: FC = () => {
   const [form] = Form.useForm();
   const { id }: { id: string } = useParams();
   const [fileImages, setFileImages] = useState<UploadFile[]>([]);
   const [uploadFile, setUploadFile] = useState<any>();
-  const [userDevices] = useState<UserDeviceData[]>(data);
+  const [userDevices] = useState<UserDeviceData[]>([]);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
 
   const onCloseDrawer = () => {
     setIsOpenDrawer(false);
   };
 
-  // setUserDevices(data);
+  // useEffect(() => {
+  //   const list = (listDevices || []).map((item) => {
+  //     return {
+  //       deviceId: item.msgParam.deviceUid.toUpperCase(),
+  //       deviceType: getDeviceTypeByDeviceId(item.msgParam.deviceUid) || '',
+  //     };
+  //   });
+  //   setDevices(list);
+  // }, []);
 
-  // const [fileImages, setFileImages] = useState<UploadFile[]>([
-  //   {
-  //     uid: '-1',
-  //     name: 'image.png',
-  //     status: 'done',
-  //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-  //   },
-  // ]);
-  // console.log('params', id);
-  // const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  // const [deviceId, setDeviceId] = useState('');
-  // const onCloseDrawer = () => {
-  //   setIsOpenDrawer(false);
-  // };
   const title = id ? 'Edit user' : 'Create new user';
-
-  // const onChangeImage = async ({ fileList: newFileList }: any) => {
-  //   const storageRef = await storage.ref();
-  //   console.log('newFileList', newFileList);
-  //   const [file] = newFileList;
-  //   const metadata = {
-  //     contentType: file.type,
-  //   };
-  //   console.log('file', file);
-  //   const uploadImage = storageRef
-  //     .child(`admin/user-images/${new Date().getTime()}-${file.name}`)
-  //     .put(file, metadata);
-  //   console.log('uploadImage', uploadImage);
-
-  //   // Register three observers:
-  //   // 1. 'state_changed' observer, called any time the state changes
-  //   // 2. Error observer, called on failure
-  //   // 3. Completion observer, called on successful completion
-  //   uploadImage.on(
-  //     'state_changed',
-  //     (snapshot) => {
-  //       console.log('snapshot', snapshot);
-  //       // // Observe state change events such as progress, pause, and resume
-  //       // // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-  //       // const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  //       // console.log('Upload is ' + progress + '% done');
-  //       // switch (snapshot.state) {
-  //       //   case FileUploadTaskState.PAUSED: // or 'paused'
-  //       //     console.log('Upload is paused');
-  //       //     break;
-  //       //   case FileUploadTaskState.RUNNING: // or 'running'
-  //       //     console.log('Upload is running');
-  //       //     break;
-  //       // }
-  //     },
-  //     (error) => {
-  //       // Handle unsuccessful uploads
-  //       console.log('error => ', error);
-  //     },
-  //     () => {
-  //       // Handle successful uploads on complete
-  //       // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-  //       uploadImage.snapshot.ref.getDownloadURL().then((downloadURL) => {
-  //         console.log('File available at', downloadURL);
-  //       });
-  //     },
-  //   );
-
-  //   setFileImages(newFileList);
-  // };
 
   const onChangeImage = ({ fileList: newFileList }: any) => {
     setFileImages(newFileList);
@@ -152,7 +78,6 @@ const UserManagementForm: FC = () => {
               initialValues={{ remember: true }}
               onFinish={onFinish}
               // onFinishFailed={onFinishFailed}
-              autoComplete="off"
             >
               <Form.Item
                 label="Username"
@@ -166,7 +91,7 @@ const UserManagementForm: FC = () => {
                 name="password"
                 rules={[{ required: true, message: 'Please input your password!' }]}
               >
-                <Input.Password />
+                <Input.Password autoComplete="new-password" />
               </Form.Item>
 
               <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>

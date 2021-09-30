@@ -39,6 +39,12 @@
     component: './user-management/UserManagementForm',
   },
   {
+    path: '/dashboard',
+    name: 'user.dashboard',
+    icon: 'smile',
+    component: './dashboard',
+  },
+  {
     path: '/',
     redirect: '/device-manager',
   },

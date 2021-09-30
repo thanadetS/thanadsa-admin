@@ -56,7 +56,6 @@ export interface UserDeviceData {
 }
 
 export interface SelectDeviceData {
-  id: string;
   deviceId: string;
   deviceType: string;
   isAlert: boolean;

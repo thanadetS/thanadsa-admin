@@ -51,4 +51,5 @@ export default {
   'menu.editor.koni': 'Koni Editor',
   'menu.device.manager': 'Device Manager',
   'menu.user.management': 'User Management',
+  'menu.user.dashboard': 'Dash Board',
 };
