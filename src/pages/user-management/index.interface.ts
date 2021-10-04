@@ -24,11 +24,12 @@ export interface ColumnDeviceManage {
 }
 
 export interface UserData {
-  id: string;
+  id?: string;
   userName: string;
   password: string;
   email: string;
   userImage: string;
+  userRole?: string;
   rowNumber?: number;
 }
 

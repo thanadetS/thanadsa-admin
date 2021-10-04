@@ -1,24 +1,34 @@
 import { Button, Col, Divider, Drawer, Form, Input, Row, Select, Space } from 'antd';
 import type { ColumnDeviceManage } from './index.interface';
 import { DeviceManageCondition } from './index.interface';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import { getDeviceTypeDataFormatByDeviceId } from './utils';
-import { deviceSelected } from '@/services/device-manager/mock';
+import { getDeviceById, updateDevice } from '@/services/device-manager';
+import { listUsers } from '@/services/user-management';
+import { UserData } from '../user-management/index.interface';
 
 interface Props {
+  id: string | '';
   isRegister: boolean;
-  deviceId: string;
   isOpenDrawer: boolean;
   onCloseDrawer: () => void;
 }
 
-const ManageDevice = ({ isRegister, deviceId, isOpenDrawer, onCloseDrawer }: Props) => {
+const ManageDevice = ({ id, isRegister, isOpenDrawer, onCloseDrawer }: Props) => {
   const [form] = Form.useForm();
+  const [deviceId, setDeviceId] = useState('');
+  const [users, setUsers] = useState<UserData[]>([]);
 
   const onFinish = (values: ColumnDeviceManage) => {
+    updateDevice(id, {
+      deviceId,
+      deviceName: values.deviceName,
+      isRegister: true,
+    });
     console.log('values => ', JSON.stringify(values));
+    onCloseDrawer();
   };
 
   const clearValues = () => {
@@ -32,14 +42,25 @@ const ManageDevice = ({ isRegister, deviceId, isOpenDrawer, onCloseDrawer }: Pro
   };
 
   useEffect(() => {
-    if (isRegister && deviceId) {
-      form.setFieldsValue(deviceSelected(deviceId));
+    if (id) {
+      getDeviceById(id).then((deviceItem) => {
+        if (deviceItem) {
+          setDeviceId(deviceItem.deviceId);
+          form.setFieldsValue(deviceItem);
+        }
+      });
+    }
+
+    listUsers(setUsers);
+    console.log('users', users);
+    if (isRegister) {
+      // form.setFieldsValue(deviceSelected(deviceId));
     } else {
       clearValues();
     }
-  }, [isRegister, deviceId]);
+  }, [isRegister, id]);
 
-  const title = deviceId ? 'Manage device' : 'Register new device';
+  const title = isRegister ? 'Manage device' : 'Register new device';
 
   return (
     <>
@@ -73,7 +94,9 @@ const ManageDevice = ({ isRegister, deviceId, isOpenDrawer, onCloseDrawer }: Pro
               <Form.Item name="customer" label="Customer">
                 <Select>
                   <Select.Option value="">{null}</Select.Option>
-                  <Select.Option value="admin">admin</Select.Option>
+                  {users.map((item) => {
+                    return <Select.Option value={item.userName}>{item.userName}</Select.Option>;
+                  })}
                 </Select>
               </Form.Item>
             </Col>

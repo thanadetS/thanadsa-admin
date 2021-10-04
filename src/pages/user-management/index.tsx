@@ -3,53 +3,21 @@ import { Button, Col, Divider, Row, Space } from 'antd';
 import { Table } from 'antd';
 import type { UserData } from './index.interface';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
 import styles from './index.less';
-import { db } from '../../services/firebase';
+import { history } from 'umi';
+import { listUsers } from '@/services/user-management';
 
 const { Column } = Table;
 
 const UserManagement = () => {
-  const history = useHistory();
-  const usersCollection = db.collection('users');
   const [users, setUsers] = useState<UserData[]>([]);
 
-  // const getUsers = async () => {
-  //   // const usersSnapshot = await getDocs(usersCol);
-  //   // const usersList = usersSnapshot.docs.map((doc) => doc.data());
-  //   return usersList;
-  // };
-
-  // useEffect(() => {
-  //   getUsers().then((items) => {
-  //     setUsers(items);
-  //   });
-  // }, []);
-
   useEffect(() => {
-    const unsubscribe = usersCollection.onSnapshot((items) => {
-      const list: UserData[] = [];
-      let rowNumber = 1;
-      items.forEach((document) => {
-        const documentData = document.data();
-        list.push({
-          id: document.id,
-          userName: documentData.userName,
-          password: documentData.password,
-          email: documentData.email,
-          userImage: documentData.userImage,
-          rowNumber: rowNumber++,
-        });
-      });
-      setUsers(list);
-    });
-
+    const unsubscribe = listUsers(setUsers);
     return () => {
       unsubscribe();
     };
   }, []);
-
-  console.log('users', users);
 
   return (
     <>
@@ -93,12 +61,11 @@ const UserManagement = () => {
             key="edit-action"
             width="20%"
             align="center"
-            render={() => (
+            render={(record) => (
               <Space size="middle">
                 <Button
                   onClick={() => {
-                    // setIsOpenDrawer(true);
-                    // setDeviceId(text.key);
+                    history.push(`/user-management/edit/${record.id}`);
                   }}
                 >
                   <EditOutlined />

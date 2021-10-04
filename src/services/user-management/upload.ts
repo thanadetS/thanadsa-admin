@@ -1,4 +1,4 @@
-// import { storage } from '../../services/firebase';
+import { storage } from '../../services/firebase';
 
 export const beforeUpload = (file: any) => {
   const isImage = file.type.indexOf('image/') === 0;
@@ -27,5 +27,25 @@ export const onPreview = async (file: any) => {
   const imgWindow = window.open(src);
   if (imgWindow) {
     imgWindow.document.write(image.outerHTML);
+  }
+};
+
+export const customUpload = async ({ onError, onSuccess, file }: any) => {
+  const storageRef = await storage.ref();
+  const metadata = {
+    contentType: file.type,
+  };
+
+  const imageName = `${new Date().getTime()}-${file.name}`; //a unique name for the image
+  const imgFile = storageRef.child(`admin/user-images/${imageName}`);
+  try {
+    const image = imgFile.put(file, metadata);
+    image.on('state_changed', async () => {
+      const imageUrl = await image.snapshot.ref.getDownloadURL();
+      file.imageUrl = imageUrl;
+      onSuccess(null, file);
+    });
+  } catch (e) {
+    onError(e);
   }
 };

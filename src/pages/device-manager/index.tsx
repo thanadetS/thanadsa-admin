@@ -1,20 +1,21 @@
 import { Button, Divider, Space } from 'antd';
 import { Table } from 'antd';
-import type { ColumnType } from './index.interface';
+import type { DeviceInfo } from './index.interface';
 import { useState } from 'react';
 import { EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import ManageDevice from './ManageDevice';
-import listDevices from '../../services/device-manager/devices';
+// import listDevices from '../../services/device-manager/devices';
 import styles from './index.less';
 import { useEffect } from 'react';
-import { getDeviceTypeByDeviceId } from './utils';
+import { listDevices } from '@/services/device-manager';
 
 const { Column } = Table;
 
 const DeviceManager = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const [deviceId, setDeviceId] = useState('');
-  const [devices, setDevices] = useState<ColumnType[]>([]);
+  const [recordId, setRecordId] = useState('');
+  const [registerDevices, setRegisterDevices] = useState<DeviceInfo[]>([]);
+  const [unregisterDevices, setUnregisterDevices] = useState<DeviceInfo[]>([]);
   const [isRegister, setIsRegister] = useState(false);
 
   const onCloseDrawer = () => {
@@ -22,13 +23,8 @@ const DeviceManager = () => {
   };
 
   useEffect(() => {
-    const list = (listDevices || []).map((item) => {
-      return {
-        deviceId: item.msgParam.deviceUid.toUpperCase(),
-        deviceType: getDeviceTypeByDeviceId(item.msgParam.deviceUid) || '',
-      };
-    });
-    setDevices(list);
+    listDevices(setRegisterDevices, true);
+    listDevices(setUnregisterDevices, false);
   }, []);
 
   return (
@@ -36,8 +32,8 @@ const DeviceManager = () => {
       <div className={styles.deviceManager}>
         <div className={styles.listDevice}>
           <Divider orientation="left">Registered Device</Divider>
-          <Table<ColumnType>
-            dataSource={devices}
+          <Table<DeviceInfo>
+            dataSource={registerDevices}
             rowKey={(record) => record.deviceId}
             // height="92%"
             pagination={false}
@@ -63,12 +59,12 @@ const DeviceManager = () => {
               key="edit-action"
               width="20%"
               align="center"
-              render={(text) => (
+              render={(_text, record: DeviceInfo) => (
                 <Space size="middle">
                   <Button
                     onClick={() => {
                       setIsOpenDrawer(true);
-                      setDeviceId(text.deviceId);
+                      setRecordId(record.id || '');
                       setIsRegister(true);
                     }}
                   >
@@ -81,8 +77,8 @@ const DeviceManager = () => {
         </div>
         <div className={styles.listDevice}>
           <Divider orientation="left">Unregistered Device</Divider>
-          <Table<ColumnType>
-            dataSource={devices}
+          <Table<DeviceInfo>
+            dataSource={unregisterDevices}
             rowKey={(record) => record.deviceId}
             // height="92%"
             pagination={false}
@@ -108,12 +104,12 @@ const DeviceManager = () => {
               key="add-action"
               width="20%"
               align="center"
-              render={(text) => (
+              render={(_text, record: DeviceInfo) => (
                 <Space size="middle">
                   <Button
                     onClick={() => {
                       setIsOpenDrawer(true);
-                      setDeviceId(text.deviceId);
+                      setRecordId(record.id || '');
                       setIsRegister(false);
                     }}
                   >
@@ -127,7 +123,7 @@ const DeviceManager = () => {
       </div>
       <ManageDevice
         isRegister={isRegister}
-        deviceId={deviceId}
+        id={recordId}
         isOpenDrawer={isOpenDrawer}
         onCloseDrawer={onCloseDrawer}
       />

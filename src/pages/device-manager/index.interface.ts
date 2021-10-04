@@ -42,3 +42,11 @@ export interface DeviceData {
   apUid: string;
   msgParam: MsgParam;
 }
+
+export interface DeviceInfo {
+  id?: string;
+  deviceId: string;
+  deviceType?: string;
+  deviceName: string;
+  isRegister: boolean;
+}
